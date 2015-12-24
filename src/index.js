@@ -1,5 +1,8 @@
-import $ from 'jquery';
-const canvas = $('<canvas></canvas>').appendTo('body')[0];
+const canvas = document.createElement('canvas');
+document.body.appendChild(canvas);
+canvas.style.position = 'absolute';
+canvas.style.top = '50%';
+canvas.style.left = '50%';
 const ctx = canvas.getContext('2d');
 // network的中心焦点
 let originDot = null;
@@ -21,23 +24,18 @@ const lineBox = {
 let winW, winH;
 // 所有绘制圆点的集合
 let dots = {
-  sum: 50,
+  sum: 80,
   dom: []
 };
 
 //canvas充满屏幕
 function updateCanvasSize() {
-  winW = $(window).width() * 0.8;
-  winH = $(window).height() * 0.6;
+  winW = document.documentElement ? document.documentElement.clientWidth* 0.8 : document.body.clientWidth* 0.8;
+  winH = document.documentElement ? document.documentElement.clientHeight* 0.6 : document.body.clientHeight* 0.6;
   canvas.width = winW;
   canvas.height = winH;
-  $(canvas).css({
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    marginTop: -winH / 2,
-    marginLeft: -winW / 2
-  });
+  canvas.style.marginTop = -winH/2+'px';
+  canvas.style.marginLeft = -winW/2+'px';
   ctx.fillStyle = "#B3C1C7";
   ctx.strokeStyle = '#C1CCD2';
   dots.dom = [];
@@ -95,7 +93,7 @@ function drawLines() {
     }
   }
   for (let i = 0, len = targetDots.dom.length; i < len; i++) {
-    let _index = i + 1;
+    let _index = i === len - 1 ? 0 : i + 1;
     if (_index < len) {
       ctx.moveTo(targetDots.dom[i].x, targetDots.dom[i].y);
       ctx.lineTo(targetDots.dom[_index].x, targetDots.dom[_index].y);
@@ -147,8 +145,8 @@ updateCanvasSize();
 createDots();
 window.requestAnimationFrame(draw);
 
-$(window).on('resize', function() {
+window.onresize = function() {
   ctx.clearRect(0, 0, winW, winH);
   updateCanvasSize();
   createDots();
-});
+}
